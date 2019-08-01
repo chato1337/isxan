@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <h1 class="text-center">Informacion de la entidad</h1>
-        <table class="table table-sm">
+        <table class="table table-light table-bordered">
             <thead>
                 <tr>
                     <th>Accion</th>
@@ -24,7 +24,6 @@
                 </tr>
             </tbody>
         </table>
-
         <!-- Modal -->
         <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-md" role="document">
@@ -68,12 +67,28 @@
             return {
                 nit: 0,
                 nombre: 'sin definir',
+                mostrarDepartamentos: [],
                 departamento: '',
-                ciudad: '',
+                ciudad: ''
             }
         },
+        methods: {
+          listarDepartamento(){
+            let me = this;
+            var url = '/departamentos';
+            axios.get(url).then(function (response){
+              var respuesta = response.data;
+              console.log(respuesta);
+              me.mostrarDepartamentos = respuesta;
+            })
+            .catch(function (error){
+              console.log(error);
+            });
+          }
+        },
         mounted() {
-            console.log('Component mounted.')
+            console.log('Component mounted.');
+            this.listarDepartamento();
         }
     }
 </script>

@@ -1864,18 +1864,32 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       nit: 0,
       nombre: 'sin definir',
+      mostrarDepartamentos: [],
       departamento: '',
       ciudad: ''
     };
   },
+  methods: {
+    listarDepartamento: function listarDepartamento() {
+      var me = this;
+      var url = '/departamentos';
+      axios.get(url).then(function (response) {
+        var respuesta = response.data;
+        console.log(respuesta);
+        me.mostrarDepartamentos = respuesta;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    }
+  },
   mounted: function mounted() {
     console.log('Component mounted.');
+    this.listarDepartamento();
   }
 });
 
@@ -37756,7 +37770,7 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("table", { staticClass: "table table-sm" }, [
+    return _c("table", { staticClass: "table table-light table-bordered" }, [
       _c("thead", [
         _c("tr", [
           _c("th", [_vm._v("Accion")]),
