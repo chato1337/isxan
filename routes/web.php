@@ -11,8 +11,26 @@
 |
 */
 
-Route::get('/', function() {
+Route::get('/dian-api', function() {
     return redirect('/api/ubl2.1/documentation');
 });
 
 Route::get('/listings', 'ListingController@index');
+
+// por aqui meti la mano
+
+Route::get('/', 'SystemController@index');
+
+//metodos del controlador auth y login
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
