@@ -21,6 +21,7 @@ Route::get('/listings', 'ListingController@index');
 
 Route::get('/', 'SystemController@index');
 Route::get('/departamentos', 'SystemController@deptos');
+Route::get('/ciudades', 'SystemController@ciudades');
 
 //metodos del controlador auth y login
 Auth::routes();

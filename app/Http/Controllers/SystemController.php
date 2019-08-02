@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Country;
 use App\Department;
+use App\Municipality;
 
 class SystemController extends Controller
 {
@@ -22,5 +24,13 @@ class SystemController extends Controller
       $deptos = Department::orderBy('id', 'asc')->get();
 
       return ['departamentos' => $deptos];
+    }
+
+    public function ciudades(Request $request)
+    {
+      $busqueda = $request->id;
+      $ciudades = Municipality::where('department_id', $busqueda)->get();
+
+      return ['ciudades' => $ciudades];
     }
 }

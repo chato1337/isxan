@@ -41,12 +41,14 @@
                             <label for="">Nombre de la entidad:</label>
                             <input :value="nombre" class="form-control" type="text">
                             <label for="">Departamento:</label>
-                            <select class="custom-select" name="" id="">
-                                <option value="">seleccione</option>
+                            <select class="custom-select" v-model="idepartamento" @change="listarCiudades(idepartamento)">
+                              <option value="0">seleccione</option>
+                              <option v-for="departamento in mostrarDepartamentos" :key="departamento.id" :value="departamento.id" v-text="departamento.name"></option>
                             </select>
                             <label for="">Ciudad:</label>
-                            <select class="custom-select" name="" id="">
-                                <option value="">selecione</option>
+                            <select class="custom-select" v-model="imunicipio">
+                              <option value="0">selecione</option>
+                              <option v-for="ciudad in mostrarCiudades" :key="ciudad.id" :value="ciudad.id" v-text="ciudad.name"></option>
                             </select>
                         </div>
                     </div>
@@ -67,7 +69,10 @@
             return {
                 nit: 0,
                 nombre: 'sin definir',
+                idepartamento: 0,
+                imunicipio: 0,
                 mostrarDepartamentos: [],
+                mostrarCiudades: [],
                 departamento: '',
                 ciudad: ''
             }
@@ -78,8 +83,18 @@
             var url = '/departamentos';
             axios.get(url).then(function (response){
               var respuesta = response.data;
-              console.log(respuesta);
-              me.mostrarDepartamentos = respuesta;
+              me.mostrarDepartamentos = respuesta.departamentos;
+            })
+            .catch(function (error){
+              console.log(error);
+            });
+          },
+          listarCiudades(idepartamento){
+            let me = this;
+            var url = '/ciudades?id='+idepartamento;
+            axios.get(url).then(function (response){
+              var respuesta = response.data;
+              me.mostrarCiudades = respuesta.ciudades;
             })
             .catch(function (error){
               console.log(error);

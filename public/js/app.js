@@ -1864,12 +1864,17 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
     return {
       nit: 0,
       nombre: 'sin definir',
+      idepartamento: 0,
+      imunicipio: 0,
       mostrarDepartamentos: [],
+      mostrarCiudades: [],
       departamento: '',
       ciudad: ''
     };
@@ -1880,8 +1885,17 @@ __webpack_require__.r(__webpack_exports__);
       var url = '/departamentos';
       axios.get(url).then(function (response) {
         var respuesta = response.data;
-        console.log(respuesta);
-        me.mostrarDepartamentos = respuesta;
+        me.mostrarDepartamentos = respuesta.departamentos;
+      })["catch"](function (error) {
+        console.log(error);
+      });
+    },
+    listarCiudades: function listarCiudades(idepartamento) {
+      var me = this;
+      var url = '/ciudades?id=' + idepartamento;
+      axios.get(url).then(function (response) {
+        var respuesta = response.data;
+        me.mostrarCiudades = respuesta.ciudades;
       })["catch"](function (error) {
         console.log(error);
       });
@@ -37749,15 +37763,108 @@ var render = function() {
                     _vm._v("Departamento:")
                   ]),
                   _vm._v(" "),
-                  _vm._m(2),
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.idepartamento,
+                          expression: "idepartamento"
+                        }
+                      ],
+                      staticClass: "custom-select",
+                      on: {
+                        change: [
+                          function($event) {
+                            var $$selectedVal = Array.prototype.filter
+                              .call($event.target.options, function(o) {
+                                return o.selected
+                              })
+                              .map(function(o) {
+                                var val = "_value" in o ? o._value : o.value
+                                return val
+                              })
+                            _vm.idepartamento = $event.target.multiple
+                              ? $$selectedVal
+                              : $$selectedVal[0]
+                          },
+                          function($event) {
+                            return _vm.listarCiudades(_vm.idepartamento)
+                          }
+                        ]
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "0" } }, [
+                        _vm._v("seleccione")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.mostrarDepartamentos, function(departamento) {
+                        return _c("option", {
+                          key: departamento.id,
+                          domProps: {
+                            value: departamento.id,
+                            textContent: _vm._s(departamento.name)
+                          }
+                        })
+                      })
+                    ],
+                    2
+                  ),
                   _vm._v(" "),
                   _c("label", { attrs: { for: "" } }, [_vm._v("Ciudad:")]),
                   _vm._v(" "),
-                  _vm._m(3)
+                  _c(
+                    "select",
+                    {
+                      directives: [
+                        {
+                          name: "model",
+                          rawName: "v-model",
+                          value: _vm.imunicipio,
+                          expression: "imunicipio"
+                        }
+                      ],
+                      staticClass: "custom-select",
+                      on: {
+                        change: function($event) {
+                          var $$selectedVal = Array.prototype.filter
+                            .call($event.target.options, function(o) {
+                              return o.selected
+                            })
+                            .map(function(o) {
+                              var val = "_value" in o ? o._value : o.value
+                              return val
+                            })
+                          _vm.imunicipio = $event.target.multiple
+                            ? $$selectedVal
+                            : $$selectedVal[0]
+                        }
+                      }
+                    },
+                    [
+                      _c("option", { attrs: { value: "0" } }, [
+                        _vm._v("selecione")
+                      ]),
+                      _vm._v(" "),
+                      _vm._l(_vm.mostrarCiudades, function(ciudad) {
+                        return _c("option", {
+                          key: ciudad.id,
+                          domProps: {
+                            value: ciudad.id,
+                            textContent: _vm._s(ciudad.name)
+                          }
+                        })
+                      })
+                    ],
+                    2
+                  )
                 ])
               ]),
               _vm._v(" "),
-              _vm._m(4)
+              _vm._m(2)
             ])
           ]
         )
@@ -37833,26 +37940,6 @@ var staticRenderFns = [
         [_c("span", { attrs: { "aria-hidden": "true" } }, [_vm._v("×")])]
       )
     ])
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "select",
-      { staticClass: "custom-select", attrs: { name: "", id: "" } },
-      [_c("option", { attrs: { value: "" } }, [_vm._v("seleccione")])]
-    )
-  },
-  function() {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c(
-      "select",
-      { staticClass: "custom-select", attrs: { name: "", id: "" } },
-      [_c("option", { attrs: { value: "" } }, [_vm._v("selecione")])]
-    )
   },
   function() {
     var _vm = this
@@ -50315,14 +50402,15 @@ __webpack_require__.r(__webpack_exports__);
 /*!*********************************************!*\
   !*** ./resources/js/components/Entidad.vue ***!
   \*********************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _Entidad_vue_vue_type_template_id_a67b3264___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Entidad.vue?vue&type=template&id=a67b3264& */ "./resources/js/components/Entidad.vue?vue&type=template&id=a67b3264&");
 /* harmony import */ var _Entidad_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Entidad.vue?vue&type=script&lang=js& */ "./resources/js/components/Entidad.vue?vue&type=script&lang=js&");
-/* empty/unused harmony star reexport *//* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+/* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _Entidad_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__) if(__WEBPACK_IMPORT_KEY__ !== 'default') (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _Entidad_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
 
 
 
@@ -50352,7 +50440,7 @@ component.options.__file = "resources/js/components/Entidad.vue"
 /*!**********************************************************************!*\
   !*** ./resources/js/components/Entidad.vue?vue&type=script&lang=js& ***!
   \**********************************************************************/
-/*! exports provided: default */
+/*! no static exports found */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
