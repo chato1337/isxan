@@ -10,7 +10,7 @@
     </template>
 
     <template v-if="menu==2">
-        <h2 class="text-center">Contabilidad</h2>
+      <contabilidad></contabilidad>
     </template>
 
     <template v-if="menu==3">
@@ -18,7 +18,7 @@
     </template>
 
     <template v-if="menu==4">
-        <contabilidad></contabilidad>
+        <facturacion></facturacion>
     </template>
 
     <template v-if="menu==5">
@@ -26,9 +26,12 @@
     </template>
 
     <template v-if="menu==6">
-        <entidad></entidad>
+      <personas></personas>
     </template>
 
+    <template v-if="menu==7">
+      <entidad></entidad>
+    </template>
 
     <div id="dock-container">
         <div id="dock">
@@ -54,8 +57,12 @@
                     <a href="#"><img src="{{ asset('img/icon-5.png') }}"/></a>
                 </li>
                 <li @click="menu=6">
-                    <span>Entidad</span>
+                    <span>Personas</span>
                     <a href="#"><img src="{{ asset('img/icon-6.png') }}"/></a>
+                </li>
+                <li @click="menu=7">
+                    <span>Entidad</span>
+                    <a href="#"><img src="{{ asset('img/icon-7.png') }}"/></a>
                 </li>
             </ul>
         </div>

@@ -22,8 +22,11 @@ window.Vue = require('vue');
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('menu-principal', require('./components/Menu.vue').default);
 Vue.component('entidad', require('./components/Entidad.vue').default);
+Vue.component('facturacion', require('./components/Facturacion.vue').default);
 Vue.component('contabilidad', require('./components/Contabilidad.vue').default);
+Vue.component('personas', require('./components/Personas.vue').default);
 Vue.component('activos', require('./components/contabilidad/Activos.vue').default);
+Vue.component('Proveedores', require('./components/facturacion/Proveedores.vue').default);
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
