@@ -23,6 +23,11 @@ Route::get('/', 'SystemController@index');
 Route::get('/departamentos', 'SystemController@deptos');
 Route::get('/ciudades', 'SystemController@ciudades');
 
+//personas controller
+
+Route::get('/persona', 'PersonaController@listarPersonas');
+Route::post('/persona/registrar', 'PersonaController@registrarPersona');
+
 //metodos del controlador auth y login
 Auth::routes();
 
