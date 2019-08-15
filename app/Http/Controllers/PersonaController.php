@@ -9,7 +9,15 @@ class PersonaController extends Controller
 {
     public function listarPersonas(Request $request)
     {
-      $persona = Persona::orderBy('id', 'asc')->get();
+      $buscar = $request->buscar;
+      $criterio = $request->criterio;
+
+      if ($buscar == '') {
+        $persona = Persona::orderBy('id', 'asc')->get();
+      }
+      else{
+        $persona = Persona::where($criterio, 'like', '%'. $buscar . '%')->orderBy('id', 'asc')->get();
+      }
 
       return ['personas' => $persona];
     }

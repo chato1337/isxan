@@ -4,13 +4,13 @@
     <div class="form-group row">
         <div class="col-md-6">
             <div class="input-group">
-                <select class="form-control col-md-3">
-                    <option value="nombre">Nombre</option>
-                    <option value="descripcion">Descripción</option>
+                <select class="form-control col-md-3" v-model="criterio">
+                    <option value="num_documento">Documento:</option>
+                    <option value="nombre">Nombre:</option>
                 </select>
-                <input type="text" class="form-control" placeholder="Texto a buscar">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
-                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#exampleModal">Agregar</button>
+                <input v-model="texto_busqueda" type="text" class="form-control" placeholder="Texto a buscar">
+                <button @click="listarPersonas(criterio, texto_busqueda)" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                <button @click="abrirModal('persona','registrar')" type="button" class="btn btn-success">Agregar</button>
             </div>
         </div>
     </div>
@@ -27,16 +27,14 @@
                 <th>Telefono:</th>
                 <th>Email:</th>
                 <th>Dirección:</th>
-                <th>Departamento:</th>
-                <th>Ciudad:</th>
             </tr>
         </thead>
         <tbody>
             <tr v-for="persona in mostrarPersonas" :key="persona.id">
                 <td scope="row">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#exampleModal">
-                        Editar
+                    <button @click="abrirModal('persona', 'actualizar', persona)" type="button" class="btn btn-sm btn-warning">
+                        Actualizar
                     </button>
                 </td>
                 <td v-text="persona.id"></td>
@@ -46,18 +44,16 @@
                 <td v-text="persona.telefono"></td>
                 <td v-text="persona.email"></td>
                 <td v-text="persona.direccion"></td>
-                <td>@mdo</td>
-                <td>@mdo</td>
             </tr>
         </tbody>
     </table>
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" tabindex="-1" :class="{'mostrar': modal}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
+            <div class="modal-content mt-4">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Ingresar nueva persona</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <h5 class="modal-title" id="exampleModalLabel" v-text="tituloModal"></h5>
+                    <button @click="cerrarModal()" type="button" class="close" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
@@ -120,8 +116,9 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button @click="registrarPersona()" type="button" class="btn btn-success">Registrar persona</button>
+                    <button @click="cerrarModal()" type="button" class="btn btn-secondary">Cancelar</button>
+                    <button @click="registrarPersona()" v-if="tipoAccion==1" type="button" class="btn btn-success">Registrar persona</button>
+                    <button @click="registrarPersona()" v-if="tipoAccion==2" type="button" class="btn btn-warning">Actualizar persona</button>
                 </div>
             </div>
         </div>
@@ -134,6 +131,7 @@
 export default {
     data() {
         return {
+            id_persona: 0,
             tipo_documento: '0',
             num_documento: 0,
             nombre: 'sin definir',
@@ -146,13 +144,19 @@ export default {
             email: '',
             departamento: 0,
             ciudad: 0,
-            mostrarPersonas: []
+            mostrarPersonas: [],
+            criterio: 'num_documento',
+            texto_busqueda: '',
+            modal: 0,
+            tituloModal: '',
+            tipoAccion: 0
         }
     },
     methods: {
-        listarPersonas() {
+        listarPersonas(criterio, texto_busqueda) {
             let me = this;
-            var url = '/persona'
+            var url = '/persona?buscar='+texto_busqueda+'&criterio='+criterio;
+
 
             axios.get(url).then(function(response){
               var respuesta = response.data;
@@ -175,6 +179,7 @@ export default {
                 });
         },
         listarCiudades(idepartamento) {
+            this.imunicipio = 0;
             let me = this;
             var url = '/ciudades?id=' + idepartamento;
             axios.get(url).then(function(response) {
@@ -199,7 +204,8 @@ export default {
               'email': this.email
             }).then(function (response){
               console.log('funciono!');
-              me.listarPersonas();
+              me.cerrarModal();
+              me.listarPersonas('num_documento', '');
             }).catch(function(error){
               console.log(error)
             });
@@ -208,12 +214,77 @@ export default {
             let me = this;
 
 
+        },
+        abrirModal(modelo, accion, data = []){
+          switch(modelo){
+            case "persona": {
+              switch(accion){
+                case 'registrar':
+                {
+                  this.modal = 1;
+                  this.tipoAccion = 1;
+                  this.tituloModal = 'Registrar persona';
+                  this.tipo_documento = '0';
+                  this.num_documento = 0;
+                  this.nombre = '',
+                  this.direccion = '';
+                  this.telefono = '';
+                  this.email = '';
+                  this.idepartamento = 0;
+                  this.imunicipio = 0;
+                  break;
+                }
+                case 'actualizar':
+                {
+                  this.modal = 1;
+                  this.tipoAccion = 2;
+                  this.tituloModal = 'Actualizar persona';
+                  this.id_persona = data['id'];
+                  this.tipo_documento = data['tipo_documento'];
+                  this.num_documento = data['num_documento'];
+                  this.nombre = data['nombre'];
+                  this.direccion = data['direccion'];
+                  this.telefono = data['telefono'];
+                  this.email = data['email'];
+                  this.idepartamento = data['departamento'];
+                  this.listarCiudades(this.idepartamento);
+                  this.imunicipio = data['ciudad'];
+                  break;
+                }
+              }
+            }
+          }
+        },
+        cerrarModal(){
+            this.modal = 0;
+            this.tipo_documento = '0';
+            this.num_documento = 0;
+            this.nombre = '',
+            this.direccion = '';
+            this.telefono = '';
+            this.email = '';
+            this.idepartamento = 0;
+            this.imunicipio = 0;
+
         }
     },
     mounted() {
         console.log('Component mounted.');
         this.listarDepartamento();
-        this.listarPersonas();
+        // this.listarCiudades(this.imunicipio);
+        this.listarPersonas(this.criterio, this.texto_busqueda);
     }
 }
 </script>
+<style>
+    .modal-content{
+        width: 100% !important;
+        position: absolute !important;
+    }
+    .mostrar{
+        display: list-item !important;
+        opacity: 1 !important;
+        position: absolute !important;
+        background-color: #3c29297a !important;
+    }
+</style>

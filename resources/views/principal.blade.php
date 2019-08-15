@@ -30,6 +30,14 @@
     </template>
 
     <template v-if="menu==7">
+      <h1 class="text-center">talento humano</h1>
+    </template>
+
+    <template v-if="menu==8">
+      <h1 class="text-center">Archivo</h1>
+    </template>
+
+    <template v-if="menu==20">
       <entidad></entidad>
     </template>
 
@@ -61,8 +69,16 @@
                     <a href="#"><img src="{{ asset('img/icon-6.png') }}"/></a>
                 </li>
                 <li @click="menu=7">
-                    <span>Entidad</span>
+                    <span>Talento humano</span>
                     <a href="#"><img src="{{ asset('img/icon-7.png') }}"/></a>
+                </li>
+                <li @click="menu=8">
+                    <span>Archivo</span>
+                    <a href="#"><img src="{{ asset('img/icon-8.png') }}"/></a>
+                </li>
+                <li @click="menu=20">
+                    <span>Entidad</span>
+                    <a href="#"><img src="{{ asset('img/icon-x.png') }}"/></a>
                 </li>
             </ul>
         </div>
