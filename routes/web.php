@@ -27,6 +27,7 @@ Route::get('/ciudades', 'SystemController@ciudades');
 
 Route::get('/persona', 'PersonaController@listarPersonas');
 Route::post('/persona/registrar', 'PersonaController@registrarPersona');
+Route::put('/persona/actualizar', 'PersonaController@actualizarPersona');
 
 //metodos del controlador auth y login
 Auth::routes();

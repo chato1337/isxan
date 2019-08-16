@@ -47,6 +47,12 @@
             </tr>
         </tbody>
     </table>
+    <paginate name="mostrarPersonas" :list="mostrarPersonas" :per="2">
+        <li v-for="persona in paginated('mostrarPersonas')" :key="persona.id">
+            {{ persona }}
+        </li>
+    </paginate>
+    <paginate-links for="mostrarPersonas"></paginate-links>
     <!-- Modal -->
     <div class="modal fade" tabindex="-1" :class="{'mostrar': modal}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md" role="document">
@@ -118,7 +124,8 @@
                 <div class="modal-footer">
                     <button @click="cerrarModal()" type="button" class="btn btn-secondary">Cancelar</button>
                     <button @click="registrarPersona()" v-if="tipoAccion==1" type="button" class="btn btn-success">Registrar persona</button>
-                    <button @click="registrarPersona()" v-if="tipoAccion==2" type="button" class="btn btn-warning">Actualizar persona</button>
+                    <button @click="actualizarPersona()" v-if="tipoAccion==2" type="button" class="btn btn-warning">Actualizar persona</button>
+                    <button @click="boton()">prueba swal</button>
                 </div>
             </div>
         </div>
@@ -128,6 +135,9 @@
 </template>
 
 <script>
+import Swal from 'sweetalert2';
+import VuePaginate from 'vue-paginate';
+Vue.use(VuePaginate);
 export default {
     data() {
         return {
@@ -145,6 +155,7 @@ export default {
             departamento: 0,
             ciudad: 0,
             mostrarPersonas: [],
+            paginate: ['mostrarPersonas'],
             criterio: 'num_documento',
             texto_busqueda: '',
             modal: 0,
@@ -153,6 +164,9 @@ export default {
         }
     },
     methods: {
+        boton(){
+            Swal.fire('Any fool can use a computer')
+        },
         listarPersonas(criterio, texto_busqueda) {
             let me = this;
             var url = '/persona?buscar='+texto_busqueda+'&criterio='+criterio;
@@ -191,6 +205,7 @@ export default {
                 });
         },
         registrarPersona() {
+            alert('por aqui no es...');
             let me = this;
 
             axios.post('/persona/registrar', {
@@ -208,6 +223,30 @@ export default {
               me.listarPersonas('num_documento', '');
             }).catch(function(error){
               console.log(error)
+            });
+        },
+        actualizarPersona() {
+            let me = this;
+
+            axios.put('/persona/actualizar',{
+                'id': this.id_persona,
+                'nombre': this.nombre,
+                'tipo_documento': this.tipo_documento,
+                'num_documento': this.num_documento,
+                'direccion': this.direccion,
+                'departamento': this.idepartamento,
+                'ciudad': this.imunicipio,
+                'telefono': this.telefono,
+                'email': this.email
+            }).then(function (response){
+                var tipoAlerta = 'success';
+                var registro = me.nombre;
+                var mensaje = 'se actualizo el registro: '+registro+' correctamente';
+                me.cerrarModal();
+                me.listarPersonas('num_documento', '');
+                me.alerta(tipoAlerta, registro, mensaje);
+            }).catch(function(error){
+                console.log(error)
             });
         },
         nombreDepartamento() {
@@ -266,6 +305,15 @@ export default {
             this.idepartamento = 0;
             this.imunicipio = 0;
 
+        },
+        alerta(tipo, registro, mensaje){
+            Swal.fire({
+                position: 'center',
+                type: tipo,
+                title: mensaje,
+                showConfirmButton: false,
+                timer: 2500
+            })
         }
     },
     mounted() {
