@@ -8,8 +8,8 @@
                     <option value="num_documento">Documento:</option>
                     <option value="nombre">Nombre:</option>
                 </select>
-                <input v-model="texto_busqueda" type="text" class="form-control" placeholder="Texto a buscar">
-                <button @click="listarPersonas(criterio, texto_busqueda)" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                <input v-model="buscar" @keyup.enter="listarPersonas(1, buscar, criterio)" type="text" class="form-control" placeholder="Escriba y pulse en buscar o enter">
+                <button @click="listarPersonas(1, buscar, criterio)" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                 <button @click="abrirModal('persona','registrar')" type="button" class="btn btn-success">Agregar</button>
             </div>
         </div>
@@ -47,12 +47,19 @@
             </tr>
         </tbody>
     </table>
-    <paginate name="mostrarPersonas" :list="mostrarPersonas" :per="2">
-        <li v-for="persona in paginated('mostrarPersonas')" :key="persona.id">
-            {{ persona }}
-        </li>
-    </paginate>
-    <paginate-links for="mostrarPersonas"></paginate-links>
+    <nav>
+        <ul class="pagination">
+            <li class="page-item" v-if="pagination.current_page > 1">
+                <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page - 1,buscar,criterio)">Ant</a>
+            </li>
+            <li class="page-item" v-for="page in pagesNumber" :key="page" :class="[page == isActived ? 'active' : '']">
+                <a class="page-link" href="#" @click.prevent="cambiarPagina(page,buscar,criterio)" v-text="page"></a>
+            </li>
+            <li class="page-item" v-if="pagination.current_page < pagination.last_page">
+                <a class="page-link" href="#" @click.prevent="cambiarPagina(pagination.current_page + 1,buscar,criterio)">Sig</a>
+            </li>
+        </ul>
+    </nav>
     <!-- Modal -->
     <div class="modal fade" tabindex="-1" :class="{'mostrar': modal}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-md" role="document">
@@ -64,6 +71,11 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <div v-show="error" class="form-group">
+                        <div class="text-center">
+                            <div v-for="error in errorMensaje" :key="error" v-text="error" class="badge badge-danger text-wrap"></div>
+                        </div>
+                    </div>
                     <div class="form-group">
                         <div class="container-fluid">
                             <div class="row">
@@ -125,7 +137,6 @@
                     <button @click="cerrarModal()" type="button" class="btn btn-secondary">Cancelar</button>
                     <button @click="registrarPersona()" v-if="tipoAccion==1" type="button" class="btn btn-success">Registrar persona</button>
                     <button @click="actualizarPersona()" v-if="tipoAccion==2" type="button" class="btn btn-warning">Actualizar persona</button>
-                    <button @click="boton()">prueba swal</button>
                 </div>
             </div>
         </div>
@@ -155,31 +166,70 @@ export default {
             departamento: 0,
             ciudad: 0,
             mostrarPersonas: [],
-            paginate: ['mostrarPersonas'],
             criterio: 'num_documento',
-            texto_busqueda: '',
+            buscar: '',
             modal: 0,
             tituloModal: '',
-            tipoAccion: 0
+            tipoAccion: 0,
+            pagination: {
+                'total': 0,
+                'current_page': 0,
+                'per_page': 0,
+                'last_page': 0,
+                'from': 0,
+                'to': 0,
+            },
+            offset: 3,
+            error: 0,
+            errorMensaje: []
+            
         }
     },
+    computed: {
+    isActived: function(){
+        return this.pagination.current_page;
+    },
+    pagesNumber: function(){
+        if(!this.pagination.to){
+            return [];
+        }
+        var from = this.pagination.current_page - this.offset;
+        if(from<2){
+            from = 1;
+        }
+        var to = from + (this.offset * 2);
+        if(to>=this.pagination.last_page){
+            to = this.pagination.last_page;
+        }
+        var pagesArray = [];
+        while(from<=to) {
+            pagesArray.push(from);
+            from++;
+        }
+        return pagesArray;
+    }
+    },
     methods: {
-        boton(){
-            Swal.fire('Any fool can use a computer')
-        },
-        listarPersonas(criterio, texto_busqueda) {
+        listarPersonas(page, buscar, criterio) {
             let me = this;
-            var url = '/persona?buscar='+texto_busqueda+'&criterio='+criterio;
-
+            var url = '/persona?page='+page+'&buscar='+buscar+'&criterio='+criterio;
 
             axios.get(url).then(function(response){
               var respuesta = response.data;
               console.log(respuesta);
-              me.mostrarPersonas = respuesta.personas;
+              me.mostrarPersonas = respuesta.personas.data;
+              me.pagination= respuesta.pagination;
             })
             .catch(function(error){
               console.log(error)
             });
+        },
+        cambiarPagina(page,buscar,criterio){
+            let me = this;
+            // actualiza la pagian actual
+            me.pagination.current_page = page;
+            // enviar peticion para listar la otra pagina
+            me.listarPersonas(page,buscar,criterio);
         },
         listarDepartamento() {
             let me = this;
@@ -205,8 +255,10 @@ export default {
                 });
         },
         registrarPersona() {
-            alert('por aqui no es...');
             let me = this;
+            if(this.validar()){
+                return;
+            }
 
             axios.post('/persona/registrar', {
               'nombre': this.nombre,
@@ -218,12 +270,31 @@ export default {
               'telefono': this.telefono,
               'email': this.email
             }).then(function (response){
-              console.log('funciono!');
-              me.cerrarModal();
-              me.listarPersonas('num_documento', '');
+                var tipoAlerta = 'success';
+                var registro = me.nombre;
+                var mensaje = 'La persona: '+registro+' fue registrada correctamente';
+                me.cerrarModal();
+                me.alerta(tipoAlerta, registro, mensaje);
+                me.listarPersonas('num_documento', '');
             }).catch(function(error){
               console.log(error)
             });
+        },
+        validar(){
+            this.error = 0;
+            this.errorMensaje = [];
+
+            if(!this.nombre) this.errorMensaje.push("El nombre es un campo obligatorio");
+            if(this.num_documento==0) this.errorMensaje.push("El numero de documento es un campo obligatorio");
+            if(!this.direccion) this.errorMensaje.push("La direccion es un campo obligatorio");
+            if(!this.telefono) this.errorMensaje.push("El telefono es un campo obligatorio");
+            if(!this.email) this.errorMensaje.push("El email es un campo obligatorio");
+            if(this.idepartamento == 0) this.errorMensaje.push("El departamento es un campo obligatorio");
+            if(this.imunicipio == 0) this.errorMensaje.push("El municipio/ciudad es un campo obligatorio");
+
+            if(this.errorMensaje.length) this.error = 1;
+
+            return this.error;
         },
         actualizarPersona() {
             let me = this;
@@ -304,7 +375,8 @@ export default {
             this.email = '';
             this.idepartamento = 0;
             this.imunicipio = 0;
-
+            this.error = 0;
+            this.errorMensaje = [];
         },
         alerta(tipo, registro, mensaje){
             Swal.fire({
@@ -320,7 +392,7 @@ export default {
         console.log('Component mounted.');
         this.listarDepartamento();
         // this.listarCiudades(this.imunicipio);
-        this.listarPersonas(this.criterio, this.texto_busqueda);
+        this.listarPersonas(1, this.buscar, this.criterio);
     }
 }
 </script>
