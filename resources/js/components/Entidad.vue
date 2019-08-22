@@ -3,20 +3,134 @@
         <h1 class="text-center">Mis Entidades:</h1>
         
     <div class="row">
-        <div class="co">
+        <div class="col">
             <p>
                 <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                     Agregar Nueva persona
                 </a>
+
+                <!-- Button trigger modal -->
+                <button @click="abrirModal('persona', 'actualizar', persona)" type="button" class="btn btn-success">
+                    Agregar Entidad
+                </button>
+
+                <button @click="alerta('success', 'muy pronto', 'estoy calmao paisano')" type="button" class="btn btn-warning">
+                    Agregar Sede
+                </button>
             </p>
+
             <div class="collapse" id="collapseExample">
                 <div class="card card-body">
                     <personas></personas>
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" tabindex="-1" :class="{'mostrar': modal}" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content mt-4">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel" v-text="tituloModal"></h5>
+                        <button @click="cerrarModal()" type="button" class="close" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div v-show="error" class="form-group">
+                            <div class="text-center">
+                                <div v-for="error in errorMensaje" :key="error" v-text="error" class="badge badge-danger text-wrap"></div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="">Tipo de documento:</label>
+                                        <select class="custom-select" v-model="tipo_documento">
+                                            <option value="0">seleccione</option>
+                                            <option value="CC">CEDULA DE CIUDADANIA</option>
+                                            <option value="TI">TARJETA DE IDENTIDAD</option>
+                                            <option value="RUT">RUT</option>
+                                            <option value="PS">PASAPORTE</option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label for="">Numero de documento:</label>
+                                        <input v-model="num_documento" class="form-control" type="number">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="">Nombres y apellidos:</label>
+                                        <input v-model="nombre" class="form-control" type="text">
+                                    </div>
+                                    <div class="col">
+                                        <label for="">Dirección:</label>
+                                        <input v-model="direccion" class="form-control" type="text">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="">Telefono de contacto:</label>
+                                        <input v-model="telefono" class="form-control" type="text">
+                                    </div>
+                                    <div class="col">
+                                        <label for="">Correo electronico:</label>
+                                        <input v-model="email" class="form-control" type="text">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <label for="">Departamento:</label>
+                                        <select class="custom-select" v-model="idepartamento" @change="listarCiudades(idepartamento)">
+                                            <option value="0">seleccione</option>
+                                            <option v-for="departamento in mostrarDepartamentos" :key="departamento.id" :value="departamento.id" v-text="departamento.name"></option>
+                                        </select>
+                                    </div>
+                                    <div class="col">
+                                        <label for="">Ciudad:</label>
+                                        <select class="custom-select" v-model="imunicipio">
+                                            <option value="0">selecione</option>
+                                            <option v-for="ciudad in mostrarCiudades" :key="ciudad.id" :value="ciudad.id" v-text="ciudad.name"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button @click="cerrarModal()" type="button" class="btn btn-secondary">Cancelar</button>
+                        <button @click="registrarPersona()" v-if="tipoAccion==1" type="button" class="btn btn-success">Registrar persona</button>
+                        <button @click="actualizarPersona()" v-if="tipoAccion==2" type="button" class="btn btn-warning">Actualizar persona</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
-        
+    <div class="row">
+        <!-- aqui se va a renderizar la entidad principal -->
+        <div class="col">
+            <div class="card text-white bg-success mb-6">
+            <div class="card-header">Header</div>
+            <div class="card-body">
+                <h5 class="card-title">Success card title</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            </div>
+            </div> 
+        </div>
+        <!-- aqui se va a renderizar la entidad secundaria -->
+        <div class="col">
+            <div class="card border-warning mb-3">
+            <div class="card-header">Header</div>
+            <div class="card-body">
+                <h5 class="card-title">Warning card title</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+            </div>
+            </div>       
+        </div>
+    </div>
     </div>
 </template>
 
